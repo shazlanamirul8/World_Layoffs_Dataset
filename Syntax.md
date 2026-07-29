@@ -47,10 +47,24 @@ SET company = TRIM(company),
 ```
 
 ```sql
+-- Checking industry column
+SELECT DISTINCT industry
+FROM layoffs_analysis
+ORDER BY 1;
+```
+
+```sql
 -- Standardize industry column
 UPDATE layoffs_analysis
 SET industry = 'Crypto'
 WHERE industry LIKE 'Crypto%';
+```
+
+```sql
+-- Checking country column
+SELECT DISTINCT country
+FROM layoffs_analysis
+ORDER BY 1;
 ```
 
 ```sql
