@@ -1,4 +1,42 @@
+# Analysis & Findings
 
+## Layoffs by Company in a Single Event
+
+```sql
+SELECT company, total_laid_off, percentage_laid_off
+FROM layoffs_analysis
+ORDER BY total_laid_off DESC;
+```
+
+## Layoffs Period
+
+```sql
+SELECT MIN(`date`) AS started, MAX(`date`) AS ended
+FROM layoffs_analysis;
+```
+
+## Total Layoffs by Companies
+
+```sql
+SELECT company, SUM(total_laid_off) AS layoffs_num
+FROM layoffs_analysis
+GROUP BY company
+ORDER BY 2 DESC;
+```
+
+## Total Layoffs by Industries
+
+```sql
+SELECT industry, SUM(total_laid_off) AS layoffs_num
+FROM layoffs_analysis
+GROUP BY industry
+ORDER BY 2 DESC;
+```
+
+SELECT country, SUM(total_laid_off)
+FROM layoffs_analysis
+GROUP BY country
+ORDER BY 2 DESC;
 
 # Raw Data
 ```sql
