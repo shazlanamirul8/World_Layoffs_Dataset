@@ -32,11 +32,61 @@ FROM layoffs_analysis
 GROUP BY industry
 ORDER BY 2 DESC;
 ```
+## Total Layoffs by Countries
 
+```sql
 SELECT country, SUM(total_laid_off)
 FROM layoffs_analysis
 GROUP BY country
 ORDER BY 2 DESC;
+```
+
+## Total Layoffs by Year
+
+```sql
+SELECT YEAR(`date`), SUM(total_laid_off(
+FROM layoffs_analysis
+WHERE YEAR(`date`) IS NOT NULL
+GROUP BY YEAR(`date`)
+ORDER BY 1 DESC;
+```
+
+### Rolling Total of Layoffs by Month
+
+```sql
+WITH Rolling_Total AS
+(
+SELECT SUBSTRING(`date`, 1, 7) AS `month`, SUM(total_laid_off) AS sum_layoff
+FROM layoffs_analysis
+WHERE `date` IS NOT NULL
+GROUP BY `month`
+ORDER BY 1
+)
+SELECT `month`, sum_layoff, SUM(sum_layoff) OVER(ORDER BY `month`) AS rolling_total
+FROM Rolling_Total;
+```
+
+### Top 5 Companies with Most Layoffs per Year
+
+```sql
+WITH Company_Year (company, years, total_laid_off) AS
+(SELECT company, YEAR(`date`), SUM(total_laid_off)
+FROM layoffs_analysis
+GROUP BY company, YEAR(`date`)
+), Company_Rank AS
+(SELECT *, DENSE_RANK() OVER(PARTITION BY years ORDER BY total_laid_off DESC) AS ranking
+FROM Company_Year
+WHERE years IS NOT NULL
+)
+SELECT *
+FROM Company_Rank
+WHERE ranking <= 5;
+```
+
+`DENSE_RANK()` was used instead of `RANK()` to ensure that tied 
+companies are not excluded. This is why 2022 shows six companies 
+instead of five, as Carvana and Philips both recorded **4,000** 
+layoffs and share the same rank.
 
 # Raw Data
 ```sql
